@@ -1,0 +1,24 @@
+globals: Phaser
+module.exports = class Player < Phaser.Sprite:
+   constructor = (game, x, y) ->
+      Phaser.Sprite.call(@, game, x, y, .simon, 0)
+      @anchor.set-to(0.5, 0)
+      @animations.add(.walk, {0, 1, 2, 3, 4}, 10, true)
+      @game.physics.arcade.enable(@)
+      @game.add.existing(@)
+
+   update = ->
+      @body.velocity.x = 0
+
+      if @game.input.keyboard.is-down(Phaser.Keyboard.LEFT):
+         @body.velocity.x = -150
+         @animations.play(.walk)
+         if @scale.x == 1:
+            @scale.x = -1
+      elif @game.input.keyboard.is-down(Phaser.Keyboard.RIGHT):
+         @body.velocity.x = 150
+         @animations.play(.walk)
+         if @scale.x == -1:
+            @scale.x = 1
+      else:
+         @animations.frame = 0

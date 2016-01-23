@@ -1,0 +1,55 @@
+globals: Phaser
+module.exports = class EnemyTank:
+   constructor(index, @game, @player, @bullets) =
+      let {x, y} = {@game.world.random-x, @game.world.random-y}
+      @health = 3
+      @fire-rate = 1000
+      @next-fire = 0
+      @alive = true
+
+      @tank   = @game.add.sprite(x, y, .sheet_tanks, "tankGreen.png")
+      @barrel = @game.add.sprite(x, y, .sheet_tanks, "barrelGreen.png")
+
+      @tank.anchor.set(0.5)
+      @tank.rotation += 1.57
+      @barrel.anchor.set(0.525, -0.2125)
+
+      @tank.name = index.to-string()
+      @game.physics.arcade.enable(@tank)
+      @tank.body.immovable = false
+      @tank.body.collide-world-bounds = true
+      @tank.body.bounce.set-to(1, 1)
+      @tank.angle = @game.rnd.angle()
+
+      @game.physics.arcade.velocity-from-rotation with
+         @tank.rotation - 1.57 ;; rotation
+         100                   ;; speed
+         @tank.body.velocity   ;; point
+
+   damage = ->
+      @health -= 1
+      if @health <= 0:
+         @alive = false
+         @tank.kill()
+         @barrel.kill()
+         true
+      else:
+         false
+
+   update = ->
+
+      {@barrel.x, @barrel.y} = {@tank.x, @tank.y}
+      @barrel.anchor.set-to(0.5, -0.2)
+      @barrel.rotation = @game.physics.arcade.angle-between(@tank, @player.tank)
+      @barrel.rotation += -1.57
+
+      if @game.physics.arcade.distance-between(@tank, @player) < 300:
+         if @game.time.now > @next-fire and @bullets.count-dead() > 0:
+            @next-fire = @game.time.now + @fire-rate
+            bullet = @bullets.get-first-dead()
+            bullet.reset(@barrel.x, @barrel.y)
+            bullet.rotation = @game.physics.arcade.move-to-object with
+               bullet  ;; displayObject
+               @player ;; destination
+               500     ;; speed
+            bullet.rotation += 1.57

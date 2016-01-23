@@ -1,0 +1,19 @@
+globals: Phaser
+module.exports = class Boot < Phaser.State:
+   constructor = ->
+      Phaser.State.call()
+      @orientated = false
+
+   preload = ->
+      @load.image .preload-bar: "loader.png"
+
+   create = ->
+      @input.max-pointers = 1
+
+      @state.disable-visibility-change = true
+
+      ;; Add device-specific functionality here:
+      if @game.device.desktop:
+         @stage.scale.page-align-horizontally = true
+
+      @game.state.start(.Preloader, true, false)

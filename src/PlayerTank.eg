@@ -1,0 +1,85 @@
+globals: Phaser
+module.exports = class PlayerTank:
+   current-speed = 0
+   fire-rate = 1000
+   next-fire = 0
+   bullets = undefined
+
+   constructor(@game, @reload-timer) =
+
+      ;; The base of our tank
+      @tank = @game.add.sprite with
+         0               ;; x
+         0               ;; y
+         .sheet_tanks    ;; key
+         "tankBeige.png" ;; frame
+      @tank.anchor.set-to(0.5, 0.5)
+      ;;@tank.rotation += 1.57
+
+      ;; This will force it to decel and limit its speed
+      @game.physics.enable @tank: Phaser.Physics.ARCADE
+      @tank.body.drag.set(0.2)
+      @tank.body.max-velocity.set-to(400, 400)
+      @tank.body.collide-world-bounds = true
+
+      ;; Finally the barrel we place on top of the tank body
+      @barrel = @game.add.sprite(0, 0) with
+         .sheet_tanks      ;; key
+         "barrelBeige.png" ;; frame
+      @barrel.anchor.set-to(0.525, -0.2125)
+
+      @tank.bring-to-top()
+      @barrel.bring-to-top()
+
+      @game.camera.follow(@tank)
+      @game.camera.deadzone = new Phaser.Rectangle(150, 150, 500, 300)
+      @game.camera.focus-on-XY(0, 0)
+
+      @cursors = @game.input.keyboard.create-cursor-keys()
+
+      ;; Create ammo
+      @bullets = @game.add.group()
+      @bullets.enable-body = true
+      @bullets.physics-body-type = Phaser.Physics.ARCADE
+      @bullets.create-multiple with
+         30                 ;; quantity
+         .sheet_tanks       ;; key
+         "bulletBeige.png" ;; frame
+         false              ;; exists
+      @bullets.set-all "anchor.x": 0.5
+      @bullets.set-all "anchor.y": 0.5
+      @bullets.set-all .out-of-bounds-kill: true
+      @bullets.set-all .check-world-bounds: true
+
+   update = ->
+
+      if   @cursors.left.is-down:  @tank.angle -= 4
+      elif @cursors.right.is-down: @tank.angle += 4
+      if   @cursors.up.is-down:    @current-speed = 300
+      else: if @current-speed > 0: @current-speed -= 4
+      if @current-speed > 0: @game.physics.arcade.velocity-from-rotation with
+         @tank.rotation - 1.57 ;; rotation
+         @current-speed        ;; speed
+         @tank.body.velocity   ;; point
+
+
+      ;; Position barrel
+      {@barrel.x, @barrel.y} = {@tank.x, @tank.y}
+      @barrel.rotation = @game.physics.arcade.angle-to-pointer(@barrel)
+      @barrel.rotation += -1.57
+
+      if @game.input.active-pointer.is-down: @fire()
+
+   fire = ->
+      if @game.time.now > @next-fire and @bullets.count-dead() > 0:
+         @next-fire = @game.time.now + @fire-rate
+         bullet = @bullets.get-first-exists(false)
+         bullet.reset(@barrel.x, @barrel.y)
+         bullet.rotation = @game.physics.arcade.move-to-pointer with
+            bullet                     ;; displayObject
+            1000                       ;; speed
+            @game.input.active-pointer ;; pointer
+            500                        ;; maxTime
+         bullet.rotation += 1.57
+         @game.state.states.Arena.reload-timer(@fire-rate)
+         ;;@reload-timer(@fire-rate)

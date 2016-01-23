@@ -1,0 +1,126 @@
+require:
+   "../PlayerTank" as PlayerTank
+   "../EnemyTank" as EnemyTank
+globals: Phaser
+module.exports = class Game < Phaser.State:
+
+   ;;enemies-total = 0
+   ;;enemies-alive = 0
+
+   create = ->
+
+      @game.stage.background-color = '#fff'
+
+      let map = @game.add.tilemap('spear-tilemap')
+      let bg-layer = map.create-layer(.background)
+      let mg-layer = map.create-layer(.mainground)
+      let fg-layer = map.create-layer(.foreground)
+
+      map.add-tileset-image(.base)
+      map.add-tileset-image(.grass)
+
+      bg-layer.resize-world()
+
+      ;; Resize game world to be a 2000 x 2000 square
+      ;;@game.world.set-bounds(-1000, -1000, 2000, 2000)
+
+      ;; FIXME: Change to tiled map
+      ;; The background
+      ;;@map = @game.add.tilemap(null, 128, 128, 12, 12)
+      ;;@map.add-tileset-image(.all, .sheet_tanks, 128, 128)
+      ;;@layer = @map.create-layer(0)
+      ;;@layer.resize-world()
+      ;;@map.fill with
+      ;;   0       ;; index
+      ;;   0       ;; x of top left of area
+      ;;   0       ;; y of top left of area
+      ;;   12      ;; width in tiles
+      ;;   12      ;; width in tiles
+      ;;   .ground ;; layer
+   ;;
+   ;;   @land = @game.add.tile-sprite(0, 0, 800, 600, .sheet_tanks, "grass.png")
+   ;;   @land.fixed-to-camera = true
+   ;;
+   ;;   @player = PlayerTank(@game, @reload-timer)
+   ;;
+   ;;   ;; The enemy bullet group
+   ;;   @enemy-bullets = @game.add.group()
+   ;;   @enemy-bullets.enable-body = true
+   ;;   @enemy-bullets.physics-body-type = Phaser.Physics.ARCADE
+   ;;   @enemy-bullets.create-multiple(100) with
+   ;;      .sheet_tanks      ;; key
+   ;;      "bulletGreen.png" ;; frame
+   ;;
+   ;;   @enemy-bullets.set-all "anchor.x": 0.5
+   ;;   @enemy-bullets.set-all "anchor.y": 0.5
+   ;;   @enemy-bullets.set-all .out-of-bounds-kill: true
+   ;;   @enemy-bullets.set-all .check-world-bounds: true
+   ;;
+   ;;   ;; Create some baddies to waste :)
+   ;;   @enemies = {}
+   ;;   @enemies-total = 20
+   ;;   @enemies-alive = 20
+   ;;   0..[@enemies-total - 1] each i ->
+   ;;      @enemies.push: EnemyTank(i, @game, @player, @enemy-bullets)
+   ;;
+   ;;   ;; TODO: add explosions
+   ;;
+   ;;   ;; TODO: fire/reloading icon
+   ;;   @load-icon = @game.add.sprite(16, 700, .attack-load-icon)
+   ;;
+   ;;   @fire-icon = @game.add.sprite(16, 700, .attack-fire-icon)
+   ;;   @crop-fire = new Phaser.Rectangle(0, 0, @fire-icon.width, 0)
+   ;;   @fire-icon.crop(@crop-fire)
+   ;;
+   ;;   @load-icon.bring-to-top()
+   ;;   @fire-icon.bring-to-top()
+   ;;
+   update = -> pass
+   ;;
+   ;;   @game.physics.arcade.overlap with
+   ;;      @enemy-bullets     ;; object1
+   ;;      @player.tank       ;; object2
+   ;;      @bullet-hit-player ;; overlap-callback
+   ;;      null               ;; process-callback
+   ;;      @                  ;; callback-context
+   ;;
+   ;;   @enemies-alive = 0
+   ;;   for enemy of @enemies: if enemy.alive:
+   ;;      @game.physics.arcade.collide(@player.tank, enemy.tank)
+   ;;      @game.physics.arcade.overlap with
+   ;;         @player.bullets   ;; object1
+   ;;         enemy.tank        ;; object2
+   ;;         @bullet-hit-enemy ;; overlap-callback
+   ;;         null              ;; process-callback
+   ;;         @                 ;; callback-context
+   ;;      enemy.update()
+   ;;
+   ;;   @player.update()
+   ;;
+   ;;   @land.tile-position.x = -[@game.camera.x]
+   ;;   @land.tile-position.y = -[@game.camera.y]
+   ;;
+   ;;   @fire-icon.position.set-to(@game.camera.x + 32,  @game.camera.y + 490)
+   ;;   @load-icon.position.set-to(@game.camera.x + 32, @game.camera.y + 490)
+   ;;
+   ;;bullet-hit-player = (tank, bullet) ->
+   ;;   bullet.kill()
+   ;;   ;; #TODO:0 add player damage
+   ;;bullet-hit-enemy  = (tank, bullet) ->
+   ;;   bullet.kill()
+   ;;   destroyed = @enemies[tank.name].damage()
+   ;;   ;;if destroyed:
+   ;;      ;;explosion-anim = @explosions.get-first-exists(false)
+   ;;      ;;explosion-anim.reset(tank.x, tank.y)
+   ;;      ;;explosion-anim.play()
+   ;;      ;; #TODO:0 add animation
+   ;;
+   ;;reload-timer = fire-rate ->
+   ;;   @crop-fire.height = @fire-icon.height
+   ;;   @game.add.tween(@crop-fire).to({ height = 0 }) with
+   ;;      fire-rate                 ;; duration
+   ;;      Phaser.Easing.Linear.None ;; ease
+   ;;      true                      ;; autoStart
+   ;;
+   ;;render = ->
+   ;;   @game.debug.text('Enemies: {@enemies-alive} / {@enemies-total}', 32, 32)

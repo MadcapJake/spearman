@@ -1,0 +1,39 @@
+require:
+   "./states/Boot" as Boot
+   "./states/Preloader" as Preloader
+   "./states/MainMenu" as MainMenu
+   "./states/Game" as Arena
+
+globals: Phaser, window
+
+class Spearman < Phaser.Game:
+   constructor = ->
+      Phaser.Game.call(@) with
+         800         ;; width
+         600         ;; height
+         Phaser.AUTO ;; renderer
+         .container  ;; parent
+         null        ;; state
+
+      @state.add(.Boot, Boot, false)
+      @state.add(.Preloader, Preloader, false)
+      @state.add(.Main-Menu, MainMenu, false)
+      @state.add(.Arena, Arena, false)
+
+      @state.start(.Boot)
+
+;;   game = Phaser.Game
+;;
+;;   preload = ->
+;;      @game.load.image .logo: "phaser2.png"
+;;
+;;   create  = ->
+;;      logo = @game.add.sprite(@game.world.center-x, @game.world.center-y, .logo)
+;;      logo.anchor.set-to(0.5, 0.5)
+;;      logo.scale.set-to(0.2, 0.2)
+;;      chain @game.add:
+;;         @tween: logo.scale
+;;         @to({ x = 1, y = 1 }, 2000, Phaser.Easing.Bounce.Out, true)
+;;
+window.onload = ->
+   game = Spearman()

@@ -1,0 +1,50 @@
+globals: Phaser
+module.exports = class Preloader < Phaser.State:
+
+   constructor = ->
+      Phaser.State.call()
+
+      @background  = null
+      @preload-bar = null
+
+      @ready = false
+
+   preload = ->
+
+      let {cX, cY} = {@game.world.centerX, @game.world.centerY}
+      @preload-bar = @add.sprite(cX, cY, .preload-bar)
+      @preload-bar.anchor.setTo(0.5)
+      @load.set-preload-sprite(@preload-bar)
+
+      @load.image .titlepage: "titlepage.png"
+      @load.image(.logo)
+
+      @game.load.tilemap with
+         'spear-tilemap'           ;; key
+         'maps/main.json'          ;; url
+         null                      ;; data
+         Phaser.Tilemap.TILED_JSON ;; format
+
+      @game.load.image with
+         'base'            ;; key
+         'tiles/base.png'  ;; url
+
+      @game.load.image with
+         'grass'           ;; key
+         'tiles/grass.png' ;; url
+
+      ;;@load.atlas-XML(.sheet_tanks)
+      ;;@load.image .attack-fire-icon: "fightFist_circle_white.png"
+      ;;@load.image .attack-load-icon: "fightFist_circle_black.png"
+
+   create = ->
+
+      @preload-bar.crop-enabled = false
+
+      tween = chain @add:
+         @tween: this.preload-bar
+         @to({ alpha = 0 }, 1000, Phaser.Easing.Linear.None, true)
+      tween.on-complete.add(@start-main-menu, @)
+
+   start-main-menu = ->
+      @game.state.start(.Main-Menu, true, false)

@@ -1,0 +1,20 @@
+{
+  "name": "spearman",
+  "version": "0.1.0",
+  "description": "A survival platformer #BGJ10",
+  "main": "app.eg",
+  "scripts": {
+    "start": "webpack-dev-server --content-base build/ --hot",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jake Russo",
+  "license": "MIT",
+  "devDependencies": {
+    "earlgrey-loader": "^0.2.4",
+    "webpack": "^1.12.11",
+    "webpack-dev-server": "^1.14.1"
+  },
+  "engines": {
+    "node": "*"
+  }
+}
